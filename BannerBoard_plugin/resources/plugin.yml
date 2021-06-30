@@ -1,0 +1,9 @@
+name: BannerBoard
+main: me.bigteddy98.bannerboard.Main
+version: ${project.version}
+author: BigTeddy98
+commands:
+    bannerboard:
+    bb:
+description: BannerBoard is a lightweight banner board plugin.
+softdepend: [PlaceholderAPI]
