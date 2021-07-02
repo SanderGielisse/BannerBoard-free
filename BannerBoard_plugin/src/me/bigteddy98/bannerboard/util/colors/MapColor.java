@@ -47,6 +47,7 @@ public class MapColor {
 		return blue;
 	}
 
+	// TODO: Keep or remove? It's not used.
 	public int getValue(int dimension) {
 		if (dimension == 0)
 			return this.red;
@@ -70,21 +71,17 @@ public class MapColor {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
 		if (obj == null)
 			return false;
+		if (this == obj)
+			return true;
 		if (getClass() != obj.getClass())
 			return false;
+		
 		MapColor other = (MapColor) obj;
-		if (blue != other.blue)
-			return false;
-		if (green != other.green)
-			return false;
-		if (id != other.id)
-			return false;
-		if (red != other.red)
-			return false;
-		return true;
+		return red == other.red &&
+				green == other.green &&
+				blue == other.blue &&
+				id == other.id;
 	}
 }

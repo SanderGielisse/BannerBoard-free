@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,7 +42,7 @@ public class BoardMemory implements Listener {
 			throw new UnsupportedOperationException("Can only register new BannerBoard from main Bukkit thread");
 		}
 		this.loadedBannerBoards.add(board);
-		System.out.println("[INFO] [BannerBoard] Succesfully loaded BannerBoard [" + board.getId() + "]");
+		Bukkit.getLogger().info("Successfully loaded BannerBoard [" + board.getId() + "]");
 	}
 
 	public Listener init(Main plugin) {
@@ -81,20 +82,16 @@ public class BoardMemory implements Listener {
 					for (Short bl : board.getMapIds(slide)) {
 						inject.addMapId(bl);
 					}
-					plugin.executorManager.render(slide, event.getPlayer(), plugin, board, new RenderCallback() {
-
-						@Override
-						public void finished(byte[][] data) {
-							if (!event.getPlayer().isOnline()) {
-								return;
-							}
-							if (data.length != board.buildItemFrameList().size()) {
-								throw new IndexOutOfBoundsException("Itemframe missing for banner with ID " + board.getId() + ", remove the banner from your config or place the itemframe back.");
-							}
-							for (int i = 0; i < data.length; i++) {
-								short id = board.getMapIds(slide).get(i);
-								inject.addFrame(id, data[i]);
-							}
+					plugin.executorManager.render(slide, event.getPlayer(), plugin, board, data -> {
+						if (!event.getPlayer().isOnline()) {
+							return;
+						}
+						if (data.length != board.buildItemFrameList().size()) {
+							throw new IndexOutOfBoundsException("Itemframe missing for banner with ID " + board.getId() + ", remove the banner from your config or place the itemframe back.");
+						}
+						for (int i1 = 0; i1 < data.length; i1++) {
+							short id = board.getMapIds(slide).get(i1);
+							inject.addFrame(id, data[i1]);
 						}
 					});
 				}
@@ -107,7 +104,7 @@ public class BoardMemory implements Listener {
 	// make sure it won't be broken
 	@EventHandler
 	private void onFrame(PlayerInteractEntityEvent event) {
-		if (event.getRightClicked() instanceof ItemFrame && this.isMapFrame((ItemFrame) event.getRightClicked())) {
+		if (isBannerFrame(event.getRightClicked())) {
 			event.setCancelled(true);
 		}
 	}
@@ -115,7 +112,7 @@ public class BoardMemory implements Listener {
 	// make sure it won't be broken
 	@EventHandler
 	private void onFrame(PlayerInteractAtEntityEvent event) {
-		if (event.getRightClicked() instanceof ItemFrame && this.isMapFrame((ItemFrame) event.getRightClicked())) {
+		if (isBannerFrame(event.getRightClicked())) {
 			event.setCancelled(true);
 
 			this.click(Action.RIGHT_CLICK, (ItemFrame) event.getRightClicked(), event.getPlayer());
@@ -125,7 +122,7 @@ public class BoardMemory implements Listener {
 	// make sure it won't be broken
 	@EventHandler
 	private void onFrame(EntityDamageByEntityEvent event) {
-		if (event.getEntity() instanceof ItemFrame && this.isMapFrame((ItemFrame) event.getEntity())) {
+		if (isBannerFrame(event.getEntity())) {
 			event.setCancelled(true);
 
 			if (event.getDamager() instanceof Player) {
@@ -137,7 +134,7 @@ public class BoardMemory implements Listener {
 	// make sure it won't be broken
 	@EventHandler
 	private void onFrame(EntityDamageEvent event) {
-		if (event.getEntity() instanceof ItemFrame && this.isMapFrame((ItemFrame) event.getEntity())) {
+		if (isBannerFrame(event.getEntity())) {
 			event.setCancelled(true);
 		}
 	}
@@ -145,7 +142,7 @@ public class BoardMemory implements Listener {
 	// make sure it won't be broken
 	@EventHandler
 	private void onFrame(HangingBreakByEntityEvent event) {
-		if (event.getEntity() instanceof ItemFrame && this.isMapFrame((ItemFrame) event.getEntity())) {
+		if (isBannerFrame(event.getEntity())) {
 			event.setCancelled(true);
 
 			if (event.getRemover() instanceof Player) {
@@ -157,7 +154,7 @@ public class BoardMemory implements Listener {
 	// make sure it won't be broken
 	@EventHandler
 	private void onFrame(HangingBreakEvent event) {
-		if (event.getEntity() instanceof ItemFrame && this.isMapFrame((ItemFrame) event.getEntity())) {
+		if (isBannerFrame(event.getEntity())) {
 			event.setCancelled(true);
 		}
 	}
@@ -210,12 +207,15 @@ public class BoardMemory implements Listener {
 									((InteractHandler<?>) renderer).handle(action, event.getPlayer(), b.getWidth(), b.getHeight(), loc, b.getId());
 								}
 							}
-							return;
 						}
 					}
 				}
 			}
 		}
+	}
+	
+	private boolean isBannerFrame(Entity entity){
+		return (entity instanceof ItemFrame) && this.isMapFrame((ItemFrame) entity);
 	}
 
 	private boolean equals(Location l1, Location l2) {

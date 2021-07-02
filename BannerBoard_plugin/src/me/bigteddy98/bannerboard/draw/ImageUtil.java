@@ -9,24 +9,30 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 
 public class ImageUtil {
 
 	public static Map<String, BufferedImage> loadCache(File imageMap) {
 		Map<String, BufferedImage> tmp = new HashMap<>();
 
-		Bukkit.getConsoleSender().sendMessage("[INFO] [BannerBoard] Loading images...");
+		Bukkit.getLogger().info("Loading images...");
 
 		loadFolder(tmp, "", imageMap);
-
-		Bukkit.getConsoleSender().sendMessage("[INFO] [BannerBoard] Succesfully loaded " + tmp.size() + " image(s).");
+		
+		Bukkit.getLogger().info("Successfully loaded " + tmp.size() + " image(s).");
 
 		return tmp;
 	}
 
 	private static void loadFolder(Map<String, BufferedImage> tmp, String prefix, File imageMap) {
-		for (File file : imageMap.listFiles()) {
+		// Filter for image files ending with .png
+		File[] files = imageMap.listFiles((dir, name) -> name.endsWith(".png"));
+		if (files == null) {
+			Bukkit.getLogger().info("Skipping " + imageMap.getName() + ". No files found...");
+			return;
+		}
+		
+		for (File file : files) {
 
 			if (file.isDirectory()) {
 				loadFolder(tmp, prefix + file.getName() + "/", file);
@@ -34,15 +40,11 @@ public class ImageUtil {
 			}
 
 			String name = file.getName();
-			if (name.endsWith(".png")) {
-				try {
-					tmp.put(prefix + name, ImageIO.read(file));
-					Bukkit.getConsoleSender().sendMessage("[INFO] [BannerBoard] Succesfully loaded image " + (prefix + name) + ".");
-				} catch (IOException e) {
-					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Could not load image " + file.getName() + ". " + e.getMessage());
-				}
-			} else {
-				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Could not load image " + file.getName() + ". Bannerboard only supports png images.");
+			try {
+				tmp.put(prefix + name, ImageIO.read(file));
+				Bukkit.getLogger().info("Successfully loaded image " + prefix + name + ".");
+			} catch (IOException e) {
+				Bukkit.getLogger().warning("Could not load image " + file.getName() + ". " + e.getMessage());
 			}
 		}
 	}

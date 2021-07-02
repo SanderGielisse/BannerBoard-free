@@ -17,7 +17,7 @@ public class ColorRenderer extends BannerBoardRenderer<Void> {
 		super(parameters, allowedWidth, allowedHeight);
 
 		if (!this.hasSetting("color")) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Renderer COLOR did not have a valid color parameter, using the default -color 0,0,0,255 now...");
+			Bukkit.getLogger().warning("Renderer COLOR did not have a valid color parameter, using the default -color 0,0,0,255 now...");
 			parameters.add(new Setting("color", "0,0,0,255"));
 		}
 	}

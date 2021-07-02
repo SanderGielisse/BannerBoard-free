@@ -43,7 +43,7 @@ public class PacketManager {
 				}
 			}
 
-			getPlayerHandle = getCraft("entity.CraftPlayer").getMethod("getHandle", new Class[0]);
+			getPlayerHandle = getCraft("entity.CraftPlayer").getMethod("getHandle");
 			playerConnection = getNMS("EntityPlayer").getDeclaredField("playerConnection");
 
 			networkManager = getNMS("PlayerConnection").getDeclaredField("networkManager");
@@ -64,7 +64,7 @@ public class PacketManager {
 	public static Class<?> getNMS(String name) throws ClassNotFoundException {
 		// org.bukkit.craftbukkit.v1_9_R1
 		// 0 1 2 3
-		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+		String version = getVersion();
 		return Class.forName("net." + GAME_NAME.toLowerCase() + ".server." + version + "." + name, true,
 				Bukkit.class.getClassLoader());
 	}
@@ -72,7 +72,7 @@ public class PacketManager {
 	public static Class<?> getCraft(String name) throws ClassNotFoundException {
 		// org.bukkit.craftbukkit.v1_9_R1
 		// 0 1 2 3
-		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+		String version = getVersion();
 		return Class.forName("org.bukkit.craftbukkit." + version + "." + name, true, Bukkit.class.getClassLoader());
 	}
 
@@ -90,9 +90,13 @@ public class PacketManager {
 
 	public static Channel getChannel(Player p)
 			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		Object entityPlayer = getPlayerHandle.invoke(p, new Object[0]);
+		Object entityPlayer = getPlayerHandle.invoke(p);
 		Object connection = playerConnection.get(entityPlayer);
 		Object network = networkManager.get(connection);
 		return (Channel) channel.get(network);
+	}
+	
+	private static String getVersion(){
+		return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 	}
 }

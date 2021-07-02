@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -104,7 +103,7 @@ public class BannerBoardInjector extends ChannelDuplexHandler {
 	private final Object ctxLock = new Object();
 
 	@Override
-	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
 
 		try {
 			synchronized (this.ctxLock) {
@@ -142,7 +141,17 @@ public class BannerBoardInjector extends ChannelDuplexHandler {
 	public short getDamage(Object itemstack)
 			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		if (VersionUtil.isHigherThan("v1_13_R1")) {
+			// getDamage is initialized as null and could therefore be null. Just in case.
+			if (getDamage == null) {
+				return 0;
+			}
+			
 			return (short) ((int) getDamage.invoke(itemstack));
+		}
+		
+		// damage is initialized as null and could therefore be null. Just in case.
+		if (damage == null) {
+			return 0;
 		}
 
 		return (short) ((int) damage.get(itemstack));
@@ -215,22 +224,18 @@ public class BannerBoardInjector extends ChannelDuplexHandler {
 			synchronized (mapLock) {
 				final Object packet = PacketManager.getPacket(mapId, data);
 				this.packets.put(mapId, packet);
-				new BukkitRunnable() {
-
-					@Override
-					public void run() {
-						try {
-							synchronized (ctxLock) {
-								while (ctx == null) {
-									ctxLock.wait();
-								}
-								ctx.write(packet);
+				Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+					try {
+						synchronized (ctxLock) {
+							while (ctx == null) {
+								ctxLock.wait();
 							}
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+							ctx.write(packet);
 						}
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
 					}
-				}.runTaskAsynchronously(Main.getInstance());
+				});
 			}
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {

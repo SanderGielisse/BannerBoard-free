@@ -43,14 +43,14 @@ public class BoardManager implements Listener {
 	private static final String BANNERBOARD_CREATOR = ChatColor.GRAY + ">> " + ChatColor.RED + "BannerBoard Creator" + ChatColor.GRAY + " <<";
 
 	public void createBoard(Player player) {
-		player.getInventory().addItem(buildItem(Material.REDSTONE_BLOCK, 2, 0, BANNERBOARD_CREATOR));
+		player.getInventory().addItem(buildItem());
 		Main.msg(player, "&DThe &YBannerBoard creation toolkit &Dhas been added to your inventory.");
 	}
 
-	private ItemStack buildItem(Material mat, int amount, int data, String name) {
-		ItemStack stack = new ItemStack(mat, amount, (short) data);
+	private ItemStack buildItem() {
+		ItemStack stack = new ItemStack(Material.REDSTONE_BLOCK, 2, (short) 0);
 		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(name);
+		meta.setDisplayName(BANNERBOARD_CREATOR);
 		stack.setItemMeta(meta);
 		return stack;
 	}
@@ -123,21 +123,16 @@ public class BoardManager implements Listener {
 					// EXAMPLE BUILD FACING NORTH and is in two different X
 					// columns
 
-					boolean northSouth = false;
-					// check in what direction the bannerboard was build
-					if (loc1.getBlockX() != loc2.getBlockX()) {
-						// it was build in the X direction
-						northSouth = true;
-					} // else eastWest
+					boolean northSouth = loc1.getBlockX() != loc2.getBlockX();
 
 					final List<BlockFace> faces = new ArrayList<>();
 					if (loc1.getBlockX() == loc2.getBlockX() && loc1.getBlockZ() == loc2.getBlockZ()) {
-						faces.addAll(Arrays.asList(new BlockFace[] { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST }));
+						faces.addAll(Arrays.asList(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST));
 					} else {
 						if (northSouth) {
-							faces.addAll(Arrays.asList(new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH }));
+							faces.addAll(Arrays.asList(BlockFace.NORTH, BlockFace.SOUTH));
 						} else { // else eastWest
-							faces.addAll(Arrays.asList(new BlockFace[] { BlockFace.EAST, BlockFace.WEST }));
+							faces.addAll(Arrays.asList(BlockFace.EAST, BlockFace.WEST));
 						}
 					}
 

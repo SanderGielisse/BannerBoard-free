@@ -21,7 +21,11 @@ import java.awt.Font;
 
 public enum FontStyle {
 
-	PLAIN(Font.PLAIN), BOLD(Font.BOLD), ITALIC(Font.ITALIC), BOLDITALIC(Font.BOLD + Font.ITALIC),;
+	PLAIN(Font.PLAIN),
+	BOLD(Font.BOLD),
+	ITALIC(Font.ITALIC),
+	BOLDITALIC(Font.BOLD + Font.ITALIC),
+	;
 
 	private final int id;
 
@@ -31,5 +35,15 @@ public enum FontStyle {
 
 	public int getId() {
 		return id;
+	}
+	
+	public static int getFont(String name) {
+		for (FontStyle style : values()) {
+			if (style.name().equalsIgnoreCase(name)) {
+				return style.getId();
+			}
+		}
+		
+		return PLAIN.getId();
 	}
 }

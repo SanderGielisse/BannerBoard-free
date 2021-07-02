@@ -23,7 +23,7 @@ public enum SkinType {
 
 	private final String name;
 
-	private SkinType(String name) {
+	SkinType(String name) {
 		this.name = name;
 	}
 

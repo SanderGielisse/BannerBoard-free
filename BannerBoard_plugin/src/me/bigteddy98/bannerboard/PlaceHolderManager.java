@@ -27,7 +27,7 @@ public class PlaceHolderManager {
 
 			@Override
 			public String onReplace(Player viewer) {
-				return viewer.getUniqueId() + "";
+				return viewer.getUniqueId().toString();
 			}
 		});
 	}
@@ -37,13 +37,13 @@ public class PlaceHolderManager {
 			if (this.registeredPlaceHolders.containsKey(name)) {
 				String owner = this.registeredPlaceHolders.get(name).getPlugin().getName();
 				String doubler = p.getPlugin().getName();
-				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[BannerBoard] [WARN] PlaceHolder %" + name + "% is already reserved for plugin " + owner + ", so it failed to register for plugin " + doubler + ". You can still use the %" + name + "% placeholder from " + doubler + " by using %" + doubler + ":" + name + "% instead.");
+				Bukkit.getLogger().warning("Failed to register Placeholder %" + name + "% for plugin " + doubler + " as it is already reserved for plugin " + owner + ". You can still use the placeholder from " + doubler + " by using %" + doubler + ":" + name + "% instead.");
 			} else {
-				Bukkit.getConsoleSender().sendMessage("[BannerBoard] [INFO] Successfully registered BannerBoard placeholder %" + name + "% for plugin " + p.getPlugin().getName() + "...");
+				Bukkit.getLogger().info("Successfully registered BannerBoard placeholder %" + name + "% for plugin " + p.getPlugin().getName() + "...");
 				this.registeredPlaceHolders.put(name, p);
 			}
 			this.registeredPlaceHolders.put(p.getPlugin().getName() + ":" + name, p);
-			Bukkit.getConsoleSender().sendMessage("[BannerBoard] [INFO] Successfully registered BannerBoard placeholder %" + (p.getPlugin().getName() + ":" + name) + "% for plugin " + p.getPlugin().getName() + "...");
+			Bukkit.getLogger().info("Successfully registered BannerBoard placeholder %" + p.getPlugin().getName() + ":" + name + "% for plugin " + p.getPlugin().getName() + "...");
 		}
 	}
 

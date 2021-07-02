@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.bigteddy98.bannerboard.util.VersionUtil;
+import org.bukkit.Bukkit;
 
 public class PaletteFileBuilder {
 
@@ -88,7 +89,7 @@ public class PaletteFileBuilder {
 	private static final List<MapColor> ALL_COLORS = new ArrayList<>();
 	static {
 		for (MapColor base : BASE_COLORS) {
-			ALL_COLORS.add(new MapColor(base.getId() * 4 + 0, base.getRed() * 180D / 255, base.getGreen() * 180D / 255,
+			ALL_COLORS.add(new MapColor(base.getId() * 4, base.getRed() * 180D / 255, base.getGreen() * 180D / 255,
 					base.getBlue() * 180D / 255));
 			ALL_COLORS.add(new MapColor(base.getId() * 4 + 1, base.getRed() * 220D / 255, base.getGreen() * 220D / 255,
 					base.getBlue() * 220D / 255));
@@ -129,13 +130,13 @@ public class PaletteFileBuilder {
 	//private static final String VERSION = "v1_8_R1";
 	//private static final List<MapColor> ALL_COLORS = new ArrayList<>();
 
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-		// 
+	public static void main(String[] args) throws IOException {
+		
 		for (MapColor s : ALL_COLORS) {
 			System.out.println("first id " + s.getId() + " rgb " + s.getRed() + " " + s.getGreen() + " " + s.getBlue());
 		}
-
-		System.out.println("[INFO] [BannerBoard] Building color hashing map...");
+		
+		Bukkit.getLogger().info("Building color hashing map...");
 		long startTime = System.currentTimeMillis();
 
 		int todo = 256 * 256 * 256;
@@ -161,7 +162,7 @@ public class PaletteFileBuilder {
 
 		final byte[] compressed = Compressor.compress(baos.toByteArray());
 		try (DataOutputStream out = new DataOutputStream(
-				new BufferedOutputStream(new FileOutputStream(new File("color_palette_" + VERSION + ".bc"))))) {
+				new BufferedOutputStream(new FileOutputStream("color_palette_" + VERSION + ".bc")))) {
 			out.writeInt(compressed.length);
 			out.write(compressed);
 		}
@@ -190,7 +191,7 @@ public class PaletteFileBuilder {
 	}
 
 	private static double distanceSquared(int c1red, int c1green, int c1blue, int c2red, int c2green, int c2blue) {
-		final double r = (c1red + c2red) / 2;
+		final double r = (double) (c1red + c2red) / 2;
 		final int dred = c1red - c2red;
 		final int dgreen = c1green - c2green;
 		final int dblue = c1blue - c2blue;

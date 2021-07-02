@@ -50,6 +50,7 @@ public class BannerBoard {
 		this.rotation = rotation;
 	}
 
+	// TODO: Never used. Keep or deprecate it?
 	public void setCurrentSlide(int currentSlide) {
 		this.currentSlide = currentSlide;
 	}
@@ -71,7 +72,7 @@ public class BannerBoard {
 					continue locationLoop;
 				}
 			}
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Itemframe missing at " + loc.toString() + ". Please restore the missing itemframe and restart your server to prevent errors.");
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Itemframe missing at " + loc + ". Please restore the missing itemframe and restart your server to prevent errors.");
 		}
 		return frames;
 	}
@@ -96,14 +97,13 @@ public class BannerBoard {
 			return new ArrayList<>(this.internalRenderers.get(slide));
 		}
 	}
-
+	
+	// TODO: Never used. Keep or deprecate it?
 	public Collection<? extends BannerBoardRenderer<?>> getReadOnlyAllRenderers() {
 		List<BannerBoardRenderer<?>> tmp = new ArrayList<>();
 		synchronized (this.internalRenderers) {
 			for (List<BannerBoardRenderer<?>> list : this.internalRenderers) {
-				for (BannerBoardRenderer<?> s : list) {
-					tmp.add(s);
-				}
+				tmp.addAll(list);
 			}
 		}
 		return tmp;
@@ -112,7 +112,7 @@ public class BannerBoard {
 	public void addTopRenderer(int slide, BannerBoardRenderer<?> renderer) {
 		synchronized (this.internalRenderers) {
 			if (this.internalRenderers.size() <= slide) {
-				this.internalRenderers.add(new ArrayList<BannerBoardRenderer<?>>());
+				this.internalRenderers.add(new ArrayList<>());
 			}
 			this.internalRenderers.get(slide).add(renderer);
 		}
@@ -215,20 +215,18 @@ public class BannerBoard {
 	public void startRunnable(int delay) {
 		// find one of our free ids
 		long delayTicks = delay * 20L;
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				if (!locationList.get(0).getChunk().isLoaded()) {
-					return;
-				}
-				int nextSlide = getCurrentSlide() + 1;
-				if (nextSlide >= getSlides()) {
-					nextSlide = 0;
-				}
-				setSlide(nextSlide);
+		
+		Bukkit.getScheduler().runTaskTimer(Main.getInstance(), () -> {
+			if (!locationList.get(0).getChunk().isLoaded()) {
+				return;
 			}
-		}.runTaskTimer(Main.getInstance(), delayTicks, delayTicks);
+			
+			int nextSlide = getCurrentSlide() + 1;
+			if (nextSlide >= getSlides()) {
+				nextSlide = 0;
+			}
+			setSlide(nextSlide);
+		}, delayTicks, delayTicks);
 	}
 
 	private int slides;
@@ -238,7 +236,7 @@ public class BannerBoard {
 		// make sure we have enough IDs
 		for (int slide = 0; slide < slides; slide++) {
 			if (slide >= this.frameIds.size()) {
-				this.frameIds.add(new ArrayList<Short>());
+				this.frameIds.add(new ArrayList<>());
 			}
 			List<ItemFrame> frameList = this.buildItemFrameList();
 			for (int frame = 0; frame < frameList.size(); frame++) {

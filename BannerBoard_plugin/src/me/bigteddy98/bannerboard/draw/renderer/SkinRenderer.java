@@ -30,7 +30,7 @@ public class SkinRenderer extends BannerBoardRenderer<BufferedImage> {
 
 		String type = this.getSetting("type").getValue();
 		if (!type.equals("3DHEAD") && !type.equals("HEAD") && !type.equals("SKIN")) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Renderer SKIN did not have a value type parameter " + type + ", using default HEAD now...");
+			Bukkit.getLogger().warning("Renderer SKIN did not have a value type parameter " + type + ", using default HEAD now...");
 			this.getSetting("type").setValue("HEAD");
 		}
 
@@ -48,7 +48,7 @@ public class SkinRenderer extends BannerBoardRenderer<BufferedImage> {
 		try {
 			return Main.getInstance().skinCache.getSkin(p.getName(), type);
 		} catch (RuntimeException e) {
-			System.out.println("[WARNING] [BannerBoard] Skin could not be downloaded for player " + p.getName() + ". " + e.getMessage() + ".");
+			Bukkit.getLogger().warning("Skin could not be downloaded for player " + p.getName() + ". " + e.getMessage());
 			return null;
 		}
 	}
