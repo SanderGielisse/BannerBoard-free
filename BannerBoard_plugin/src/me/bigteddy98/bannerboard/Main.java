@@ -328,7 +328,6 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-	// Deprecated because A) not used and B) Who knows who uses this....
 	// TODO: Not used. Remove or deprecate?
 	public static void deleteFolder(File folder) {
 		File[] files = folder.listFiles();
