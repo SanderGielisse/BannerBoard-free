@@ -96,14 +96,10 @@ public class Main extends JavaPlugin {
 	}
 
 	public void uninject(final Channel c) {
-		c.eventLoop().execute(new Runnable() {
-
-			@Override
-			public void run() {
-				final ChannelPipeline p = c.pipeline();
-				if (p.get("BannerBoard_hook") != null) {
-					p.remove("BannerBoard_hook");
-				}
+		c.eventLoop().execute(() -> {
+			final ChannelPipeline p = c.pipeline();
+			if (p.get("BannerBoard_hook") != null) {
+				p.remove("BannerBoard_hook");
 			}
 		});
 	}
