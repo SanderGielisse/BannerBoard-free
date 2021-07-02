@@ -1,12 +1,12 @@
 package me.bigteddy98.bannerboard.util;
 
+import me.bigteddy98.bannerboard.api.SkinType;
+
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import me.bigteddy98.bannerboard.api.SkinType;
 
 // TODO: Is this actually used?
 public class SkinData {

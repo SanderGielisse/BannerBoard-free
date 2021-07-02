@@ -1,13 +1,11 @@
 package me.bigteddy98.bannerboard;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import me.bigteddy98.bannerboard.api.PlaceHolder;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import me.bigteddy98.bannerboard.api.PlaceHolder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PlaceHolderManager {
 

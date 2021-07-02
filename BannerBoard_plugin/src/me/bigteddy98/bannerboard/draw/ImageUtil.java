@@ -1,14 +1,13 @@
 package me.bigteddy98.bannerboard.draw;
 
+import org.bukkit.Bukkit;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.imageio.ImageIO;
-
-import org.bukkit.Bukkit;
 
 public class ImageUtil {
 

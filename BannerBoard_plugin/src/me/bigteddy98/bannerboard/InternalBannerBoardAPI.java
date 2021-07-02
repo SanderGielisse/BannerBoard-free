@@ -17,26 +17,20 @@
  */
 package me.bigteddy98.bannerboard;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
+import me.bigteddy98.bannerboard.api.*;
+import me.bigteddy98.bannerboard.util.DrawUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import me.bigteddy98.bannerboard.api.BannerBoardAPI;
-import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
-import me.bigteddy98.bannerboard.api.CustomRenderer;
-import me.bigteddy98.bannerboard.api.PlaceHolder;
-import me.bigteddy98.bannerboard.api.SkinType;
-import me.bigteddy98.bannerboard.util.DrawUtil;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class InternalBannerBoardAPI implements BannerBoardAPI {
 	

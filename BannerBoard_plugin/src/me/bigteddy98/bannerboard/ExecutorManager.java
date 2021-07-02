@@ -1,18 +1,15 @@
 package me.bigteddy98.bannerboard;
 
+import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
+import me.bigteddy98.bannerboard.draw.BannerCanvas;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
-import me.bigteddy98.bannerboard.draw.BannerCanvas;
 
 public class ExecutorManager {
 

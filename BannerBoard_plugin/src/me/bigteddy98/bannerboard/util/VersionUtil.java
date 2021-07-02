@@ -1,9 +1,9 @@
 package me.bigteddy98.bannerboard.util;
 
+import org.bukkit.Bukkit;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.Bukkit;
 
 public class VersionUtil {
 

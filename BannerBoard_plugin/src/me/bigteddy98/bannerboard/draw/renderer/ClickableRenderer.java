@@ -1,20 +1,17 @@
 package me.bigteddy98.bannerboard.draw.renderer;
 
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
 import me.bigteddy98.bannerboard.Main;
 import me.bigteddy98.bannerboard.api.Action;
 import me.bigteddy98.bannerboard.api.DisableBannerBoardException;
 import me.bigteddy98.bannerboard.api.InteractHandler;
 import me.bigteddy98.bannerboard.api.Setting;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class ClickableRenderer extends InteractHandler<Void> {
 

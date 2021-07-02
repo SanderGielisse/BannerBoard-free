@@ -1,19 +1,11 @@
 package me.bigteddy98.bannerboard;
 
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-
 import me.bigteddy98.bannerboard.api.CustomRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.ClickableRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.ColorRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.ImageRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.LiveImageRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.SkinRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.TextRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.URLImageRenderer;
+import me.bigteddy98.bannerboard.draw.renderer.*;
 import me.bigteddy98.bannerboard.util.CaseInsensitiveMap;
+import org.bukkit.Bukkit;
+
+import java.util.Map;
 
 public class RendererManager {
 

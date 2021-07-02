@@ -17,14 +17,13 @@
  */
 package me.bigteddy98.bannerboard.api;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.image.BufferedImage;
-import java.util.Map;
-
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Map;
 
 public interface BannerBoardAPI {
 

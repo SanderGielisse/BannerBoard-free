@@ -1,14 +1,9 @@
 package me.bigteddy98.bannerboard;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import me.bigteddy98.bannerboard.util.FrameManager;
+import me.bigteddy98.bannerboard.util.SizeUtil;
+import me.bigteddy98.bannerboard.util.SizeUtil.SortData;
+import me.bigteddy98.bannerboard.util.VersionUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,10 +21,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.bigteddy98.bannerboard.util.FrameManager;
-import me.bigteddy98.bannerboard.util.SizeUtil;
-import me.bigteddy98.bannerboard.util.SizeUtil.SortData;
-import me.bigteddy98.bannerboard.util.VersionUtil;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 public class BoardManager implements Listener {
 

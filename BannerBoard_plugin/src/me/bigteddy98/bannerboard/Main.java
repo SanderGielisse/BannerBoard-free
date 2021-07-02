@@ -1,27 +1,15 @@
 package me.bigteddy98.bannerboard;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.imageio.ImageIO;
-
+import com.google.common.io.ByteStreams;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelPipeline;
+import me.bigteddy98.bannerboard.api.BannerBoardManager;
+import me.bigteddy98.bannerboard.api.PlaceHolder;
+import me.bigteddy98.bannerboard.config.ConfigurationManager;
+import me.bigteddy98.bannerboard.draw.ImageUtil;
+import me.bigteddy98.bannerboard.util.SkinCache;
+import me.bigteddy98.bannerboard.util.VersionUtil;
+import me.bigteddy98.bannerboard.util.colors.ColorManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,20 +23,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.FileUtil;
 
-import com.google.common.io.ByteStreams;
-
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelPipeline;
-import me.bigteddy98.bannerboard.api.BannerBoardManager;
-import me.bigteddy98.bannerboard.api.PlaceHolder;
-import me.bigteddy98.bannerboard.config.ConfigurationManager;
-import me.bigteddy98.bannerboard.draw.ImageUtil;
-import me.bigteddy98.bannerboard.util.SkinCache;
-import me.bigteddy98.bannerboard.util.VersionUtil;
-import me.bigteddy98.bannerboard.util.colors.ColorManager;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class Main extends JavaPlugin {
 

@@ -1,17 +1,15 @@
 package me.bigteddy98.bannerboard.draw.renderer;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import me.bigteddy98.bannerboard.Main;
 import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
 import me.bigteddy98.bannerboard.api.Setting;
 import me.bigteddy98.bannerboard.api.SkinType;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.List;
 
 public class SkinRenderer extends BannerBoardRenderer<BufferedImage> {
 

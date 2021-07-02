@@ -1,15 +1,13 @@
 package me.bigteddy98.bannerboard;
 
-import java.io.IOException;
+import me.bigteddy98.bannerboard.util.VersionUtil;
+import org.bukkit.Bukkit;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
-
-import org.bukkit.Bukkit;
-
-import me.bigteddy98.bannerboard.util.VersionUtil;
 
 public class Mapping {
 

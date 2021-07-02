@@ -1,16 +1,15 @@
 package me.bigteddy98.bannerboard;
 
+import io.netty.channel.Channel;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
-import io.netty.channel.Channel;
 
 public class PacketManager {
 

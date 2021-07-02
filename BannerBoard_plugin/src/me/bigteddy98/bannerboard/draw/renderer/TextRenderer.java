@@ -1,19 +1,5 @@
 package me.bigteddy98.bannerboard.draw.renderer;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import me.bigteddy98.bannerboard.Main;
 import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
 import me.bigteddy98.bannerboard.api.DisableBannerBoardException;
@@ -21,6 +7,14 @@ import me.bigteddy98.bannerboard.api.FontStyle;
 import me.bigteddy98.bannerboard.api.Setting;
 import me.bigteddy98.bannerboard.util.AtomicString;
 import me.bigteddy98.bannerboard.util.DrawUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class TextRenderer extends BannerBoardRenderer<Void> {
 

@@ -17,7 +17,7 @@
  */
 package me.bigteddy98.bannerboard.api;
 
-import java.awt.Font;
+import java.awt.*;
 
 public enum FontStyle {
 

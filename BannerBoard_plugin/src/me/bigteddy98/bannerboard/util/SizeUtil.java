@@ -1,10 +1,10 @@
 package me.bigteddy98.bannerboard.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SizeUtil {
 

@@ -17,10 +17,10 @@
  */
 package me.bigteddy98.bannerboard.api;
 
+import org.bukkit.plugin.Plugin;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
-import org.bukkit.plugin.Plugin;
 
 public class CustomRenderer {
 

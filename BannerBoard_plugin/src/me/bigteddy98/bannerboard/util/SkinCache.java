@@ -1,15 +1,15 @@
 package me.bigteddy98.bannerboard.util;
 
-import java.awt.Graphics2D;
+import me.bigteddy98.bannerboard.Main;
+import me.bigteddy98.bannerboard.SkinRequest;
+import me.bigteddy98.bannerboard.api.SkinType;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import me.bigteddy98.bannerboard.Main;
-import me.bigteddy98.bannerboard.SkinRequest;
-import me.bigteddy98.bannerboard.api.SkinType;
 
 public class SkinCache {
 

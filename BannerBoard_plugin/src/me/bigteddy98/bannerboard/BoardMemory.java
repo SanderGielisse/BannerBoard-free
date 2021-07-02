@@ -1,9 +1,9 @@
 package me.bigteddy98.bannerboard;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import io.netty.channel.Channel;
+import me.bigteddy98.bannerboard.api.Action;
+import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
+import me.bigteddy98.bannerboard.api.InteractHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -22,10 +22,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import io.netty.channel.Channel;
-import me.bigteddy98.bannerboard.api.Action;
-import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
-import me.bigteddy98.bannerboard.api.InteractHandler;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class BoardMemory implements Listener {
 
