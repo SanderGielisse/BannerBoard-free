@@ -17,28 +17,24 @@
  */
 package me.bigteddy98.bannerboard;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
+import me.bigteddy98.bannerboard.api.*;
+import me.bigteddy98.bannerboard.util.DrawUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import me.bigteddy98.bannerboard.api.BannerBoardAPI;
-import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
-import me.bigteddy98.bannerboard.api.CustomRenderer;
-import me.bigteddy98.bannerboard.api.PlaceHolder;
-import me.bigteddy98.bannerboard.api.SkinType;
-import me.bigteddy98.bannerboard.util.DrawUtil;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class InternalBannerBoardAPI implements BannerBoardAPI {
+	
+	private final static Pattern notAllowed = Pattern.compile("[^a-z0-9_ ]", Pattern.CASE_INSENSITIVE);
 
 	@Override
 	public void registerPlaceHolder(String name, PlaceHolder placeHolder) {
@@ -98,21 +94,6 @@ public class InternalBannerBoardAPI implements BannerBoardAPI {
 		return DrawUtil.drawFancyText(width, height, text, font, textColor, strokeColor, strokeThickness, xOffset, yOffset);
 	}
 
-	// some static methods
-	private static void check() {
-		if (!Bukkit.isPrimaryThread()) {
-			throw new UnsupportedOperationException("The BannerBoard API can only be accessed from the primary Bukkit thread");
-		}
-	}
-
-	private static Pattern notAllowed = Pattern.compile("[^a-z0-9_ ]", Pattern.CASE_INSENSITIVE);
-
-	private static void nameCheck(String s) {
-		if (notAllowed.matcher(s).find()) {
-			throw new IllegalArgumentException("BannerBoard names may not contain any special characters");
-		}
-	}
-
 	@Override
 	public String applyPlaceholders(Player p, String text) {
 		return Main.getInstance().applyPlaceholders(text, p);
@@ -150,6 +131,19 @@ public class InternalBannerBoardAPI implements BannerBoardAPI {
 			return Main.getInstance().fetchImage(url);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		}
+	}
+	
+	// some static methods
+	private static void check() {
+		if (!Bukkit.isPrimaryThread()) {
+			throw new UnsupportedOperationException("The BannerBoard API can only be accessed from the primary Bukkit thread");
+		}
+	}
+	
+	private static void nameCheck(String s) {
+		if (notAllowed.matcher(s).find()) {
+			throw new IllegalArgumentException("BannerBoard names may not contain any special characters");
 		}
 	}
 }

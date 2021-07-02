@@ -1,18 +1,17 @@
 package me.bigteddy98.bannerboard.draw.renderer;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import me.bigteddy98.bannerboard.Main;
 import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
 import me.bigteddy98.bannerboard.api.DisableBannerBoardException;
 import me.bigteddy98.bannerboard.api.Setting;
 import me.bigteddy98.bannerboard.util.AtomicString;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LiveImageRenderer extends BannerBoardRenderer<BufferedImage> {
 
@@ -32,20 +31,16 @@ public class LiveImageRenderer extends BannerBoardRenderer<BufferedImage> {
 		final Object lock = new Object();
 		final AtomicBoolean finished = new AtomicBoolean(false);
 		// switch to main bukkit thread
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				try {
-					pngURL.set(Main.getInstance().applyPlaceholders(pngURL.get(), p));
-				} finally {
-					synchronized (lock) {
-						finished.set(true);
-						lock.notifyAll();
-					}
+		Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+			try {
+				pngURL.set(Main.getInstance().applyPlaceholders(pngURL.get(), p));
+			} finally {
+				synchronized (lock) {
+					finished.set(true);
+					lock.notifyAll();
 				}
 			}
-		}.runTask(Main.getInstance());
+		});
 
 		synchronized (lock) {
 			while (!finished.get()) {
@@ -62,8 +57,7 @@ public class LiveImageRenderer extends BannerBoardRenderer<BufferedImage> {
 		if (preparation == null) {
 			return;
 		}
-		BufferedImage img = (BufferedImage) preparation;
-
+		
 		Integer xOffset = null;
 		Integer yOffset = null;
 
@@ -74,8 +68,8 @@ public class LiveImageRenderer extends BannerBoardRenderer<BufferedImage> {
 			yOffset = Integer.parseInt(this.getSetting("yOffset").getValue());
 		}
 
-		int width = img.getWidth();
-		int height = img.getHeight();
+		int width = (preparation).getWidth();
+		int height = (preparation).getHeight();
 		if (this.hasSetting("width")) {
 			width = Integer.parseInt(this.getSetting("width").getValue());
 		}
@@ -91,6 +85,6 @@ public class LiveImageRenderer extends BannerBoardRenderer<BufferedImage> {
 			yOffset = (image.getHeight() / 2 - (height / 2));
 		}
 
-		g.drawImage(img, xOffset, yOffset, width, height, null);
+		g.drawImage(preparation, xOffset, yOffset, width, height, null);
 	}
 }

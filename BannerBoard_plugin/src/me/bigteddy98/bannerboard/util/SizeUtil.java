@@ -1,10 +1,10 @@
 package me.bigteddy98.bannerboard.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SizeUtil {
 
@@ -53,8 +53,7 @@ public class SizeUtil {
 				biggestY = loc.getBlockY();
 			}
 		}
-		int height = Math.abs(smallestY - biggestY) + 1;
-		return height;
+		return Math.abs(smallestY - biggestY) + 1;
 	}
 
 	public static int highestX(List<Location> locs) {
@@ -142,8 +141,8 @@ public class SizeUtil {
 		Location rb = locs.get(0);
 		List<Location> correctOrder = new ArrayList<>();
 
-		Location startBlock = null;
-		Location endBlock = null;
+		Location startBlock;
+		Location endBlock;
 
 		switch (facing) {
 		case SOUTH:

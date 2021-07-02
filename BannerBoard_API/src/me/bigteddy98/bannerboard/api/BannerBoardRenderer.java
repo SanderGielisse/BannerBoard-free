@@ -17,12 +17,11 @@
  */
 package me.bigteddy98.bannerboard.api;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import org.bukkit.entity.Player;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
-
-import org.bukkit.entity.Player;
 
 public abstract class BannerBoardRenderer<T> {
 

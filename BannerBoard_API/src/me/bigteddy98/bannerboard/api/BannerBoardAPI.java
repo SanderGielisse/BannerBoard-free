@@ -17,14 +17,13 @@
  */
 package me.bigteddy98.bannerboard.api;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.image.BufferedImage;
-import java.util.Map;
-
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Map;
 
 public interface BannerBoardAPI {
 
@@ -33,13 +32,13 @@ public interface BannerBoardAPI {
 	 * @param name the name of the placeholder, without the % character. This should not contain any special characters.
 	 * @param placeHolder an instance of a placeholder interface.
 	 */
-	public void registerPlaceHolder(String name, PlaceHolder placeHolder);
+	void registerPlaceHolder(String name, PlaceHolder placeHolder);
 
 	/**
 	 * 
 	 * @return a map containing all registered placeholders, including the inbuilt BannerBoard placeholder %name%. The key element is the name without the % character.
 	 */
-	public Map<String, PlaceHolder> getRegisteredPlaceHolders();
+	Map<String, PlaceHolder> getRegisteredPlaceHolders();
 
 	/**
 	 * Registers a new renderer for your plugin. Do not use any uppercase characters for the name.
@@ -47,22 +46,22 @@ public interface BannerBoardAPI {
 	 * @param customRenderer an instance of the CustomRenderer class.
 	 */
 	@Deprecated
-	public void registerCustomRenderer(String name, CustomRenderer customRenderer);
+	void registerCustomRenderer(String name, CustomRenderer customRenderer);
 
 	/**
 	 * Registers a new renderer for your plugin. Do not use any uppercase characters for the name.
 	 * @param name the name of your renderer, do not use any uppercases here.
-	 * @param plugin
+	 * @param plugin the plugin instance registering this renderer
 	 * @param doLoadSkinCache set to true when using the players skin, set to false otherwise
 	 * @param customRenderer you renderer class which should extend BannerBoardRenderer
 	 */
-	public void registerCustomRenderer(String name, Plugin plugin, boolean doLoadSkinCache, Class<? extends BannerBoardRenderer<?>> customRenderer);
+	void registerCustomRenderer(String name, Plugin plugin, boolean doLoadSkinCache, Class<? extends BannerBoardRenderer<?>> customRenderer);
 
 	/**
 	 * Do not modify the returned HashMap, it's read-only, so modifying it will have no effect.
 	 * @return a case insensitive map containing all registered renderers, including the inbuilt BannerBoard renderers image, skin, text and color.
 	 */
-	public Map<String, CustomRenderer> getRegisteredRenderers();
+	Map<String, CustomRenderer> getRegisteredRenderers();
 
 	/**
 	 * Use this to receive a player's skin.
@@ -70,7 +69,7 @@ public interface BannerBoardAPI {
 	 * @param type the type of skin you like to request from the cache.
 	 * @return a BufferedImage of a players skin. This might return null if the player cache was not found or the cache failed to read the data.
 	 */
-	public BufferedImage getCachedSkin(String name, SkinType type);
+	BufferedImage getCachedSkin(String name, SkinType type);
 
 	/**
 	 * Make sure to always do a null check when using getCachedSkin(), this method does not guarantee the file can actually be read.
@@ -79,20 +78,20 @@ public interface BannerBoardAPI {
 	 * @param type the type of skin you like to request from the cache.
 	 * @return true if the skin was cached. Or false if it wasn't.
 	 */
-	public boolean hasCachedSkin(String name, SkinType type);
+	boolean hasCachedSkin(String name, SkinType type);
 
 	/**
 	 * Use this to get a loaded image. Use hasLoadedImage() first, to make sure the image is loaded.
 	 * @param fileName the name is the filename, including the extension, for example example_image.png.
 	 * @return a BufferedImage which was loaded by BannerBoard (so it was located in the /plugins/BannerBoard/images/ folder on startup). Returns null if the image was not found or if the file was corrupt.
 	 */
-	public BufferedImage getLoadedImage(String fileName);
+	BufferedImage getLoadedImage(String fileName);
 
 	/**
 	 * @param fileName the name is the filename, including the extension, for example example_image.png.
 	 * @return true if the image was loaded. You dont have to do a null check when using getLoadedImage(), this method does guarantee the file can actually be read.
 	 */
-	public boolean hasLoadedImage(String fileName);
+	boolean hasLoadedImage(String fileName);
 
 	/**
 	 * Draws a nice looking text to a BufferedImage. Draw the returned BufferedImage on your own BufferedImage at (0,0).
@@ -107,7 +106,7 @@ public interface BannerBoardAPI {
 	 * @param yOffset the y-offset at which the text will be drawn, set to null to center automatically.
 	 * @return draw the returned BufferedImage on your own BufferedImage at (0,0).
 	 */
-	public BufferedImage drawFancyText(int width, int height, String text, Font font, Color textColor, Color strokeColor, int strokeThickness, Integer xOffset, Integer yOffset);
+	BufferedImage drawFancyText(int width, int height, String text, Font font, Color textColor, Color strokeColor, int strokeThickness, Integer xOffset, Integer yOffset);
 
 	/**
 	 * 
@@ -115,21 +114,21 @@ public interface BannerBoardAPI {
 	 * @param text the input text
 	 * @return the output text with all placeholders applied
 	 */
-	public String applyPlaceholders(Player p, String text);
+	String applyPlaceholders(Player p, String text);
 
 	/**
 	 * 
 	 * @param frame the itemframe
 	 * @return the index of the frame, -1 if not found
 	 */
-	public int getFrameIndex(ItemFrame frame);
+	int getFrameIndex(ItemFrame frame);
 
 	/**
 	 * 
 	 * @param frame the itemframe
 	 * @return the id of the bannerboard, -1 if not found
 	 */
-	public int getBannerBoardId(ItemFrame frame);
+	int getBannerBoardId(ItemFrame frame);
 
-	public BufferedImage fetchImage(String url);
+	BufferedImage fetchImage(String url);
 }

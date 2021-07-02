@@ -1,15 +1,5 @@
 package me.bigteddy98.bannerboard.config;
 
-import java.awt.GraphicsEnvironment;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.block.BlockFace;
-
 import me.bigteddy98.bannerboard.BannerBoard;
 import me.bigteddy98.bannerboard.Main;
 import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
@@ -17,6 +7,14 @@ import me.bigteddy98.bannerboard.api.CustomRenderer;
 import me.bigteddy98.bannerboard.api.IncorrectBannerBoardConstructorException;
 import me.bigteddy98.bannerboard.api.Setting;
 import me.bigteddy98.bannerboard.util.SizeUtil;
+import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
+
+import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ConfigurationManager {
 
@@ -102,7 +100,7 @@ public class ConfigurationManager {
 
 				if (type.equalsIgnoreCase("SLIDEDELAY")) {
 					if (totalIndex != 0) {
-						plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] SLIDESETTINGS must been the first renderer defined for bannerboard with ID " + id + ".");
+						plugin.getLogger().warning("SLIDESETTINGS must be the first defined renderer for BannerBoard with ID " + id + ".");
 						continue;
 					}
 					String delay = renderer.split(" ")[1];
@@ -114,14 +112,14 @@ public class ConfigurationManager {
 						}
 						board.startRunnable(secs);
 					} catch (NumberFormatException e) {
-						plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] SLIDESETTINGS must be directly followed by a number (" + delay + " is not a number), error for bannerboard with ID " + id + ".");
+						plugin.getLogger().warning("SLIDESETTINGS must be directly followed by a number (" + delay + " is not a number), error for BannerBoard with ID " + id + ".");
 					}
 					continue;
 				} else if (type.equalsIgnoreCase("NEXTSLIDE")) {
 					slide++;
 					continue;
 				} else if (!registeredRenderers.containsKey(type)) {
-					plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Renderer with type " + type + " was not found for bannerboard with ID " + id + ".");
+					plugin.getLogger().warning("Renderer with type " + type + " was not found for BannerBoard with ID " + id + ".");
 					continue;
 				}
 
@@ -147,7 +145,7 @@ public class ConfigurationManager {
 					board.addTopRenderer(slide, tmp);
 				} catch (IncorrectBannerBoardConstructorException e) {
 					if (e.getCause() instanceof InvocationTargetException) {
-						plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] BannerBoard with ID " + id + " was disabled, because it encountered an exception. " + e.getCause().getCause().getMessage());
+						plugin.getLogger().warning("BannerBoard with ID " + id + " was disabled, because it encountered an exception. " + e.getCause().getCause().getMessage());
 						e.getCause().printStackTrace();
 						e.getCause().getCause().printStackTrace();
 					} else {

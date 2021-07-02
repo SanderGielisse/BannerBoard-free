@@ -1,24 +1,16 @@
 package me.bigteddy98.bannerboard;
 
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-
 import me.bigteddy98.bannerboard.api.CustomRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.ClickableRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.ColorRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.ImageRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.LiveImageRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.SkinRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.TextRenderer;
-import me.bigteddy98.bannerboard.draw.renderer.URLImageRenderer;
+import me.bigteddy98.bannerboard.draw.renderer.*;
 import me.bigteddy98.bannerboard.util.CaseInsensitiveMap;
+import org.bukkit.Bukkit;
+
+import java.util.Map;
 
 public class RendererManager {
 
 	// little thread safety fix here
-	private final CaseInsensitiveMap<CustomRenderer> registeredRenderers = new CaseInsensitiveMap<CustomRenderer>();
+	private final CaseInsensitiveMap<CustomRenderer> registeredRenderers = new CaseInsensitiveMap<>();
 
 	public RendererManager() {
 		this.registerRenderer("color", new CustomRenderer(Main.getInstance(), false, ColorRenderer.class));
@@ -37,19 +29,19 @@ public class RendererManager {
 			if (this.registeredRenderers.containsKey(name)) {
 				String owner = this.registeredRenderers.get(name).getPlugin().getName();
 				String doubler = customRenderer.getPlugin().getName();
-				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[BannerBoard] [WARN] Custom renderer " + name + " is already reserved for plugin " + owner + ", so it failed to register for plugin " + doubler + ". You can still use the " + name + " custom renderer from " + doubler + " by using " + doubler + ":" + name + " instead.");
+				Bukkit.getLogger().warning("Failed to register custom renderer " + name + " for plugin " + doubler + " as it is already reserved for plugin " + owner + ". You can still use the renderer from " + doubler + " by using " + doubler + ":" + name + " instead.");
 			} else {
-				Bukkit.getConsoleSender().sendMessage("[BannerBoard] [INFO] Successfully registered BannerBoard custom renderer " + name + " for plugin " + customRenderer.getPlugin().getName() + "...");
+				Bukkit.getLogger().info("Successfully registered custom renderer " + name + " for plugin " + customRenderer.getPlugin().getName() + "...");
 				this.registeredRenderers.put(name, customRenderer);
 			}
 			this.registeredRenderers.put(customRenderer.getPlugin().getName() + ":" + name, customRenderer);
-			Bukkit.getConsoleSender().sendMessage("[BannerBoard] [INFO] Successfully registered BannerBoard custom renderer " + (customRenderer.getPlugin().getName() + ":" + name) + " for plugin " + customRenderer.getPlugin().getName() + "...");
+			Bukkit.getLogger().info("Successfully registered custom renderer" + customRenderer.getPlugin().getName() + ":" + name + " for plugin " + customRenderer.getPlugin().getName() + "...");
 		}
 	}
 
 	public Map<String, CustomRenderer> getReadOnlyCopy() {
 		synchronized (this.registeredRenderers) {
-			return new CaseInsensitiveMap<CustomRenderer>(this.registeredRenderers);
+			return new CaseInsensitiveMap<>(this.registeredRenderers);
 		}
 	}
 }

@@ -17,15 +17,19 @@
  */
 package me.bigteddy98.bannerboard.api;
 
-import java.awt.Font;
+import java.awt.*;
 
 public enum FontStyle {
 
-	PLAIN(Font.PLAIN), BOLD(Font.BOLD), ITALIC(Font.ITALIC), BOLDITALIC(Font.BOLD + Font.ITALIC),;
+	PLAIN(Font.PLAIN),
+	BOLD(Font.BOLD),
+	ITALIC(Font.ITALIC),
+	BOLDITALIC(Font.BOLD + Font.ITALIC),
+	;
 
 	private final int id;
 
-	private FontStyle(int id) {
+	FontStyle(int id) {
 		this.id = id;
 	}
 

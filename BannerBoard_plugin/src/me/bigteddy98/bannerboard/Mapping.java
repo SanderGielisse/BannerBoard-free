@@ -1,24 +1,22 @@
 package me.bigteddy98.bannerboard;
 
-import java.io.IOException;
+import me.bigteddy98.bannerboard.util.VersionUtil;
+import org.bukkit.Bukkit;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
-
-import me.bigteddy98.bannerboard.util.VersionUtil;
-
 public class Mapping {
 
-	private static Method getHandle;
+	private final static Method getHandle;
 	private static Field worldMaps;
 	private static Field mapField;
 	private static Object dimensionManager;
 	private static Method registerBase;
-	private static Constructor<?> worldMapConstructor;
+	private final static Constructor<?> worldMapConstructor;
 
 	// 1.14 and higher
 	private static Method getWorldPersistentData;
@@ -85,7 +83,7 @@ public class Mapping {
 		return worldMaps.get(getHandle.invoke(Bukkit.getServer().getWorlds().get(0)));
 	}
 
-	public static Object claimId(short id) throws IOException {
+	public static void claimId(short id) {
 		String name = "map_" + id;
 		try {
 			final Object worldMap = worldMapConstructor.newInstance(name);
@@ -123,7 +121,6 @@ public class Mapping {
 					registerBase.invoke(getWorldMaps(), name, worldMap);
 				}
 			}
-			return worldMap;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}

@@ -1,8 +1,8 @@
 package me.bigteddy98.bannerboard.api;
 
-import java.util.List;
-
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public abstract class InteractHandler<T> extends BannerBoardRenderer<T> {
 

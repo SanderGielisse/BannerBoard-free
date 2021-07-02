@@ -1,22 +1,21 @@
 package me.bigteddy98.bannerboard.draw.renderer;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import me.bigteddy98.bannerboard.Main;
+import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
+import me.bigteddy98.bannerboard.api.DisableBannerBoardException;
+import me.bigteddy98.bannerboard.api.Setting;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import me.bigteddy98.bannerboard.Main;
-import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
-import me.bigteddy98.bannerboard.api.DisableBannerBoardException;
-import me.bigteddy98.bannerboard.api.Setting;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class URLImageRenderer extends BannerBoardRenderer<Void> {
 
@@ -39,13 +38,9 @@ public class URLImageRenderer extends BannerBoardRenderer<Void> {
 		}
 
 		refresh(true, randomPlayer());
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				refresh(false, randomPlayer());
-			}
-		}.runTaskTimer(Main.getInstance(), 20 * 60 * Integer.parseInt(this.getSetting("interval").getValue()), 20 * 60 * Integer.parseInt(this.getSetting("interval").getValue()));
+		
+		long time = 20 * 60 * Long.parseLong(this.getSetting("interval").getValue());
+		Bukkit.getScheduler().runTaskTimer(Main.getInstance(), () -> refresh(false, randomPlayer()), time, time);
 	}
 
 	private Player randomPlayer() {
@@ -78,19 +73,15 @@ public class URLImageRenderer extends BannerBoardRenderer<Void> {
 		final AtomicBoolean finished = new AtomicBoolean(false);
 		final Object lock = new Object();
 
-		Main.getInstance().executorManager.submit(Main.getInstance().executorManager.preparationExecutor, new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					toDisplay = Main.getInstance().fetchImage(with);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					synchronized (lock) {
-						finished.set(true);
-						lock.notifyAll();
-					}
+		Main.getInstance().executorManager.submit(Main.getInstance().executorManager.preparationExecutor, () -> {
+			try {
+				toDisplay = Main.getInstance().fetchImage(with);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				synchronized (lock) {
+					finished.set(true);
+					lock.notifyAll();
 				}
 			}
 		});

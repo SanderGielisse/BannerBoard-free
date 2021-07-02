@@ -4,6 +4,7 @@ version: ${project.version}
 author: BigTeddy98
 commands:
     bannerboard:
-    bb:
+        aliases: [bb]
+        description: "Main Command of BannerBoard. Use '/bb create' to create a banner."
 description: BannerBoard is a lightweight banner board plugin.
 softdepend: [PlaceholderAPI]

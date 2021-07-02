@@ -1,18 +1,5 @@
 package me.bigteddy98.bannerboard.draw.renderer;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import me.bigteddy98.bannerboard.Main;
 import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
 import me.bigteddy98.bannerboard.api.DisableBannerBoardException;
@@ -20,6 +7,14 @@ import me.bigteddy98.bannerboard.api.FontStyle;
 import me.bigteddy98.bannerboard.api.Setting;
 import me.bigteddy98.bannerboard.util.AtomicString;
 import me.bigteddy98.bannerboard.util.DrawUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class TextRenderer extends BannerBoardRenderer<Void> {
 
@@ -42,7 +37,7 @@ public class TextRenderer extends BannerBoardRenderer<Void> {
 		}
 
 		if (!Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()).contains(this.getSetting("font").getValue())) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Renderer TEXT has an unknown font value, " + this.getSetting("font").getValue() + ", using random font " + randomFont + "...");
+			Bukkit.getLogger().warning("Renderer TEXT has an unknown font value, " + this.getSetting("font").getValue() + ", using random font " + randomFont + "...");
 			parameters.add(new Setting("font", randomFont));
 		}
 
@@ -52,7 +47,7 @@ public class TextRenderer extends BannerBoardRenderer<Void> {
 		try {
 			Integer.parseInt(this.getSetting("size").getValue());
 		} catch (NumberFormatException e) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Renderer TEXT has an invalid size value, " + this.getSetting("size").getValue() + ", using default size 20...");
+			Bukkit.getLogger().warning("Renderer TEXT has an invalid size value, " + this.getSetting("size").getValue() + ", using default size 20...");
 			this.getSetting("size").setValue("20");
 		}
 
@@ -65,7 +60,7 @@ public class TextRenderer extends BannerBoardRenderer<Void> {
 		try {
 			FontStyle.valueOf(this.getSetting("style").getValue().toUpperCase());
 		} catch (Exception e) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Renderer TEXT has an invalid style value, " + this.getSetting("style").getValue() + ", using default style PLAIN...");
+			Bukkit.getLogger().warning("Renderer TEXT has an invalid style value, " + this.getSetting("style").getValue() + ", using default style PLAIN...");
 			this.getSetting("style").setValue("PLAIN");
 		}
 
@@ -78,7 +73,7 @@ public class TextRenderer extends BannerBoardRenderer<Void> {
 		try {
 			Integer.parseInt(this.getSetting("strokeThickness").getValue());
 		} catch (NumberFormatException e) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Renderer TEXT has an invalid strokeThickness value, " + this.getSetting("strokeThickness").getValue() + ", using default thickness 0...");
+			Bukkit.getLogger().warning("Renderer TEXT has an invalid strokeThickness value, " + this.getSetting("strokeThickness").getValue() + ", using default thickness 0...");
 			this.getSetting("strokeThickness").setValue("0");
 		}
 		if (!this.hasSetting("xOffset")) {
@@ -97,16 +92,12 @@ public class TextRenderer extends BannerBoardRenderer<Void> {
 		final AtomicString atomicWith = new AtomicString();
 
 		// must be done from Bukkit thread
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				synchronized (lock) {
-					atomicWith.set(Main.getInstance().applyPlaceholders(without.replace("%slide%", getSetting("slide").getValue()), p));
-					lock.notifyAll();
-				}
+		Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+			synchronized (lock) {
+				atomicWith.set(Main.getInstance().applyPlaceholders(without.replace("%slide%", getSetting("slide").getValue()), p));
+				lock.notifyAll();
 			}
-		}.runTask(Main.getInstance());
+		});
 
 		synchronized (lock) {
 			try {
@@ -121,7 +112,24 @@ public class TextRenderer extends BannerBoardRenderer<Void> {
 		int size = Integer.parseInt(this.getSetting("size").getValue());
 
 		String fontName = this.getSetting("font").getValue();
-		Font font = new Font(fontName, FontStyle.valueOf(this.getSetting("style").getValue().toUpperCase()).getId(), size);
+		Font font;
+		switch(this.getSetting("style").getValue().toUpperCase(Locale.ROOT)) {
+			case "PLAIN":
+			default:
+				font = new Font(fontName, Font.PLAIN, size);
+				break;
+			
+			case "BOLD":
+				font = new Font(fontName, Font.BOLD, size);
+				break;
+			
+			case "ITALIC":
+				font = new Font(fontName, Font.ITALIC, size);
+				break;
+			
+			case "BOLDITALIC":
+				font = new Font(fontName, Font.BOLD + Font.ITALIC, size);
+		}
 
 		Color textColor = this.decodeColor(this.getSetting("color").getValue());
 		Color blurColor = this.decodeColor(this.getSetting("strokeColor").getValue());

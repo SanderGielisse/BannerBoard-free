@@ -1,19 +1,17 @@
 package me.bigteddy98.bannerboard.draw.renderer;
 
-import java.util.List;
-
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
 import me.bigteddy98.bannerboard.Main;
 import me.bigteddy98.bannerboard.api.Action;
 import me.bigteddy98.bannerboard.api.DisableBannerBoardException;
 import me.bigteddy98.bannerboard.api.InteractHandler;
 import me.bigteddy98.bannerboard.api.Setting;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class ClickableRenderer extends InteractHandler<Void> {
 
@@ -95,7 +93,7 @@ public class ClickableRenderer extends InteractHandler<Void> {
 				// apply placeholders
 				command = Main.getInstance().applyPlaceholders(command, clicker);
 				Main.getInstance().getServer().dispatchCommand(Main.getInstance().getServer().getConsoleSender(), command);
-				System.out.println("[INFO] [BannerBoard] Interact handler executed command [" + command + "] from console.");
+				Bukkit.getLogger().info("Interact handler executed command [" + command + "] as console.");
 			}
 
 			if (this.hasSetting("playercommand")) {
@@ -106,24 +104,21 @@ public class ClickableRenderer extends InteractHandler<Void> {
 				// apply placeholders
 				command = Main.getInstance().applyPlaceholders(command, clicker);
 				Main.getInstance().getServer().dispatchCommand(clicker, command);
-				System.out.println("[INFO] [BannerBoard] Interact handler executed command [" + command + "] from player " + clicker.getName() + ".");
+				Bukkit.getLogger().info("Interact handler executed command [" + command + "] as player" + clicker.getName() + ".");
 			}
 
 			if (this.hasSetting("sendserver")) {
 				final String server = this.getSetting("sendserver").getValue();
+				
+				Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+					@SuppressWarnings("UnstableApiUsage")
+					ByteArrayDataOutput out = ByteStreams.newDataOutput();
+					out.writeUTF("Connect");
+					out.writeUTF(server);
+					clicker.sendPluginMessage(Main.getInstance(), "BungeeCord", out.toByteArray());
+				});
 
-				new BukkitRunnable() {
-
-					@Override
-					public void run() {
-						ByteArrayDataOutput out = ByteStreams.newDataOutput();
-						out.writeUTF("Connect");
-						out.writeUTF(server);
-						clicker.sendPluginMessage(Main.getInstance(), "BungeeCord", out.toByteArray());
-					}
-				}.runTask(Main.getInstance());
-
-				System.out.println("[INFO] [BannerBoard] Interact handler sent player " + clicker.getName() + " to server " + server + ".");
+				Bukkit.getLogger().info("Interact handler sent player " + clicker.getName() + " to server " + server + ".");
 			}
 		}
 	}

@@ -1,11 +1,10 @@
 package me.bigteddy98.bannerboard.draw;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
+import me.bigteddy98.bannerboard.Main;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
-
-import me.bigteddy98.bannerboard.Main;
 
 public class BannerCanvas {
 

@@ -1,15 +1,13 @@
 package me.bigteddy98.bannerboard.draw.renderer;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
 import me.bigteddy98.bannerboard.api.Setting;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.List;
 
 public class ColorRenderer extends BannerBoardRenderer<Void> {
 
@@ -17,7 +15,7 @@ public class ColorRenderer extends BannerBoardRenderer<Void> {
 		super(parameters, allowedWidth, allowedHeight);
 
 		if (!this.hasSetting("color")) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Renderer COLOR did not have a valid color parameter, using the default -color 0,0,0,255 now...");
+			Bukkit.getLogger().warning("Renderer COLOR did not have a valid color parameter, using the default -color 0,0,0,255 now...");
 			parameters.add(new Setting("color", "0,0,0,255"));
 		}
 	}

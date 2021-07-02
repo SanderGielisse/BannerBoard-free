@@ -1,18 +1,15 @@
 package me.bigteddy98.bannerboard;
 
+import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
+import me.bigteddy98.bannerboard.draw.BannerCanvas;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import me.bigteddy98.bannerboard.api.BannerBoardRenderer;
-import me.bigteddy98.bannerboard.draw.BannerCanvas;
 
 public class ExecutorManager {
 
@@ -25,62 +22,40 @@ public class ExecutorManager {
 	public void render(final int slide, final Player pl, final Main plugin, final BannerBoard board, final RenderCallback rb) {
 		final String name = pl.getName();
 		// for loop every slide
-		this.submit(this.preparationExecutor, new Runnable() {
-			public void run() {
-				final Map<Integer, Object> preps = new HashMap<>();
-
-				// do preparation async
-				for (BannerBoardRenderer<?> s : board.getReadOnlyRenderers(slide)) {
-					Object prep = null;
-					try {
-						prep = s.asyncRenderPrepare(pl);
-					} catch (Throwable e) {
-						Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Failed to do preperations for user " + name + ". " + e.getClass().getSimpleName() + " " + cap(e.getMessage()) + ".");
-					}
-					preps.put(s.getId(), prep);
+		this.submit(this.preparationExecutor, () -> {
+			final Map<Integer, Object> preps = new HashMap<>();
+			// do preparation async
+			for (BannerBoardRenderer<?> s : board.getReadOnlyRenderers(slide)) {
+				Object prep = null;
+				try {
+					prep = s.asyncRenderPrepare(pl);
+				} catch (Throwable e) {
+					Bukkit.getLogger().warning("Failed to do preperations for user " + name + ". " + e.getClass().getSimpleName() + " " + cap(e.getMessage()) + ".");
 				}
-
-				// switch to the renderer executor
-				ExecutorManager.this.submit(rendererExecutor, new Runnable() {
-
-					@Override
-					public void run() {
-						BufferedImage image = board.getImage(pl, preps, slide);
-
-						if (image.getWidth() != board.getPixelWidth() || image.getHeight() != board.getPixelHeight()) {
-							throw new RuntimeException("BufferedImage does not have correct size: should be " + board.getPixelWidth() + "x" + board.getPixelHeight() + " but is " + image.getWidth() + "x" + image.getHeight() + " for rotation" + board.getRotation());
-						}
-
-						final byte[][] data = new byte[board.getWidth() * board.getHeight()][];
-
-						int i = 0;
-
-						for (int x = 0; x < board.getWidth(); x++) {
-							for (int y = 0; y < board.getHeight(); y++) {
-								int startX = x * 128;
-								int startY = y * 128;
-
-								BufferedImage sub = image.getSubimage(startX, startY, 128, 128);
-								// render it
-								BannerCanvas canvas = new BannerCanvas();
-								canvas.drawImage(0, 0, sub);
-
-								data[i++] = canvas.getBuffer();
-							}
-						}
-
-						// send back to bukkit thread
-						new BukkitRunnable() {
-
-							@Override
-							public void run() {
-								rb.finished(data);
-							}
-						}.runTask(plugin);
-					}
-
-				});
+				preps.put(s.getId(), prep);
 			}
+			// switch to the renderer executor
+			ExecutorManager.this.submit(rendererExecutor, () -> {
+				BufferedImage image = board.getImage(pl, preps, slide);
+				if (image.getWidth() != board.getPixelWidth() || image.getHeight() != board.getPixelHeight()) {
+					throw new RuntimeException("BufferedImage does not have correct size: should be " + board.getPixelWidth() + "x" + board.getPixelHeight() + " but is " + image.getWidth() + "x" + image.getHeight() + " for rotation" + board.getRotation());
+				}
+				final byte[][] data = new byte[board.getWidth() * board.getHeight()][];
+				int i = 0;
+				for (int x = 0; x < board.getWidth(); x++) {
+					for (int y = 0; y < board.getHeight(); y++) {
+						int startX = x * 128;
+						int startY = y * 128;
+						BufferedImage sub = image.getSubimage(startX, startY, 128, 128);
+						// render it
+						BannerCanvas canvas = new BannerCanvas();
+						canvas.drawImage(0, 0, sub);
+						data[i++] = canvas.getBuffer();
+					}
+				}
+				// send back to bukkit thread
+				Bukkit.getScheduler().runTask(plugin, () -> rb.finished(data));
+			});
 		});
 	}
 
@@ -91,15 +66,11 @@ public class ExecutorManager {
 	}
 
 	public void submit(ExecutorService service, final Runnable runnable) {
-		service.submit(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					runnable.run();
-				} catch (Throwable e) {
-					e.printStackTrace();
-				}
+		service.submit(() -> {
+			try {
+				runnable.run();
+			} catch (Throwable e) {
+				e.printStackTrace(); 
 			}
 		});
 	}

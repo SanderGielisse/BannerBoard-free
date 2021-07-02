@@ -1,27 +1,15 @@
 package me.bigteddy98.bannerboard;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.imageio.ImageIO;
-
+import com.google.common.io.ByteStreams;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelPipeline;
+import me.bigteddy98.bannerboard.api.BannerBoardManager;
+import me.bigteddy98.bannerboard.api.PlaceHolder;
+import me.bigteddy98.bannerboard.config.ConfigurationManager;
+import me.bigteddy98.bannerboard.draw.ImageUtil;
+import me.bigteddy98.bannerboard.util.SkinCache;
+import me.bigteddy98.bannerboard.util.VersionUtil;
+import me.bigteddy98.bannerboard.util.colors.ColorManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,20 +23,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.FileUtil;
 
-import com.google.common.io.ByteStreams;
-
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelPipeline;
-import me.bigteddy98.bannerboard.api.BannerBoardManager;
-import me.bigteddy98.bannerboard.api.PlaceHolder;
-import me.bigteddy98.bannerboard.config.ConfigurationManager;
-import me.bigteddy98.bannerboard.draw.ImageUtil;
-import me.bigteddy98.bannerboard.util.SkinCache;
-import me.bigteddy98.bannerboard.util.VersionUtil;
-import me.bigteddy98.bannerboard.util.colors.ColorManager;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class Main extends JavaPlugin {
 
@@ -107,14 +96,10 @@ public class Main extends JavaPlugin {
 	}
 
 	public void uninject(final Channel c) {
-		c.eventLoop().execute(new Runnable() {
-
-			@Override
-			public void run() {
-				final ChannelPipeline p = c.pipeline();
-				if (p.get("BannerBoard_hook") != null) {
-					p.remove("BannerBoard_hook");
-				}
+		c.eventLoop().execute(() -> {
+			final ChannelPipeline p = c.pipeline();
+			if (p.get("BannerBoard_hook") != null) {
+				p.remove("BannerBoard_hook");
 			}
 		});
 	}
@@ -131,16 +116,19 @@ public class Main extends JavaPlugin {
 				File backup = new File(this.getDataFolder().getAbsolutePath() + "//corrupted_config_"
 						+ System.currentTimeMillis() + ".yml");
 				try {
-					backup.createNewFile();
-					FileUtil.copy(config, backup);
-					config.delete();
-					System.out.println();
-					System.out.println("============================= !!! WARNING !!! ==============================");
-					System.out.println("============= YOUR BANNERBOARD CONFIGURATION FILE WAS CORRUPT ==============");
-					System.out.println("== A BACKUP OF THE OLD FILE CAN BE FOUND IN THE BANNERBOARD PLUGIN FOLDER ==");
-					System.out.println("================= FOR NOW, A NEW EMPTY CONFIG WILL BE USED =================");
-					System.out.println("============================================================================");
-					System.out.println();
+					if (backup.createNewFile()) {
+						FileUtil.copy(config, backup);
+						
+						if (config.delete()) {
+							getLogger().warning("");
+							getLogger().warning("============================= !!! WARNING !!! ==============================");
+							getLogger().warning("============= YOUR BANNERBOARD CONFIGURATION FILE WAS CORRUPT ==============");
+							getLogger().warning("== A BACKUP OF THE OLD FILE CAN BE FOUND IN THE BANNERBOARD PLUGIN FOLDER ==");
+							getLogger().warning("================= FOR NOW, A NEW EMPTY CONFIG WILL BE USED =================");
+							getLogger().warning("============================================================================");
+							getLogger().warning("");
+						}
+					}
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
@@ -166,17 +154,13 @@ public class Main extends JavaPlugin {
 			}
 		}
 
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				try {
-					enable();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		Bukkit.getScheduler().runTaskLater(this, () -> {
+			try {
+				enable();
+			} catch (IOException ex) {
+				ex.printStackTrace();
 			}
-		}.runTaskLater(this, 0);
+		}, 0);
 	}
 
 	public void enable() throws IOException {
@@ -228,24 +212,27 @@ public class Main extends JavaPlugin {
 			this.idManager.load(startCount, amount);
 
 		} catch (ConfigException e) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED
-					+ "[WARNING] [BannerBoard] Failed to enable BannerBoard. ID range ERROR: " + e.getMessage() + ".");
-			Bukkit.shutdown();
+			getLogger().warning("Failed to enable BannerBoard. ID range ERROR: " + e.getMessage() + ".");
+			
+			// Just... don't shut down the ENTIRE server when your plugin fails... *bonks Sanders*
+			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 
 		loaded = true;
 
 		File oldData = new File(this.getDataFolder(), "internaldata.yml");
-		if (oldData.isFile() && oldData.exists()) {
-			oldData.delete();
+		if (oldData.exists() && oldData.isFile()) {
+			if (oldData.delete()) {
+				getLogger().info("Removed internaldata.yml");
+			}
 		}
 		instance = this; // reset for reload compatibility
 		BannerBoardManager.setAPI(this.publicApi);
 
 		File dataFolder = this.getDataFolder();
-		if (!dataFolder.exists()) {
-			dataFolder.mkdirs();
+		if (!dataFolder.exists() && dataFolder.mkdirs()) {
+			getLogger().info("Loaded BannerBoard plugin folder.");
 		}
 
 		this.configurationManager = new ConfigurationManager();
@@ -260,28 +247,32 @@ public class Main extends JavaPlugin {
 		this.getServer().getPluginManager().registerEvents(this.memoryManager.init(this), this);
 
 		File imageFolder = new File(dataFolder.getAbsolutePath() + "//images");
-		if (!imageFolder.exists()) {
-			imageFolder.mkdirs();
+		if (!imageFolder.exists() && imageFolder.mkdirs()) {
+			getLogger().info("Loaded images folder.");
 		}
 
 		// load all images
 		this.cachedImages = ImageUtil.loadCache(imageFolder);
 
 		File fontFolder = new File(dataFolder.getAbsolutePath() + "//fonts");
-		if (!fontFolder.exists()) {
-			fontFolder.mkdirs();
+		if (!fontFolder.exists() && fontFolder.mkdirs()) {
+			getLogger().info("Loaded fonts folder.");
 		}
 
 		GraphicsEnvironment g = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		for (File f : fontFolder.listFiles()) {
-			if (f.isFile()) {
-				try {
-					// try loading it as a font
-					g.registerFont(Font.createFont(Font.TRUETYPE_FONT, f));
-					Bukkit.getConsoleSender().sendMessage("[INFO] [BannerBoard] Loaded font " + f.getName() + ".");
-				} catch (Exception e) {
-					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] Could not load font "
-							+ f.getName() + ". " + e.getMessage() + ".");
+		File[] files = fontFolder.listFiles();
+		
+		// The listFiles method has a chance to return null which causes NPE in the for-loop
+		if (files != null) {
+			for (File f : files) {
+				if (f.isFile()) {
+					try {
+						// try loading it as a font
+						g.registerFont(Font.createFont(Font.TRUETYPE_FONT, f));
+						getLogger().info("Loaded font " + f.getName() + ".");
+					} catch (Exception e) {
+						getLogger().warning("Could not load font " + f.getName() + ". " + e.getMessage() + ".");
+					}
 				}
 			}
 		}
@@ -311,23 +302,18 @@ public class Main extends JavaPlugin {
 			this.getConfig().set("skinrender_key", "INSERT_SKINRENDER_KEY_HERE");
 			this.saveConfig();
 		}
-		Bukkit.getConsoleSender()
-				.sendMessage("[INFO] [BannerBoard] Connecting to skinrender.com with key " + safeKey() + "...");
+		getLogger().info("Connecting to " + getConfig().getString("skinserver") + " with key " + safeKey() + "...");
 
 		this.skinCache = new SkinCache(this.getConfig().getString("skinserver"));
 
 		// load all boards AFTER all plugins have enabled
-		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+		this.getServer().getScheduler().scheduleSyncDelayedTask(this, () -> {
+			Main.this.configurationManager.loadAll();
 
-			@Override
-			public void run() {
-				Main.this.configurationManager.loadAll();
-
-				// find all playerjoinevents
-				// currently only BoardMemory.onJoin
-				for (Player p : getServer().getOnlinePlayers()) {
-					memoryManager.onJoin(new PlayerJoinEvent(p, "BannerBoard reload"));
-				}
+			// find all playerjoinevents
+			// currently only BoardMemory.onJoin
+			for (Player p : getServer().getOnlinePlayers()) {
+				memoryManager.onJoin(new PlayerJoinEvent(p, "BannerBoard reload"));
 			}
 		});
 
@@ -338,6 +324,7 @@ public class Main extends JavaPlugin {
 		}
 	}
 
+	// TODO: Not used. Remove or deprecate?
 	public static void deleteFolder(File folder) {
 		File[] files = folder.listFiles();
 		if (files != null) {
@@ -345,14 +332,20 @@ public class Main extends JavaPlugin {
 				if (f.isDirectory()) {
 					deleteFolder(f);
 				} else {
-					f.delete();
+					String name = f.getName();
+					if (f.delete()) {
+						getInstance().getLogger().info("Deleted folder " + name);
+					}
 				}
 			}
 		}
-		folder.delete();
+		String name = folder.getName();
+		if (folder.delete()) {
+			getInstance().getLogger().info("Deleted folder " + name);
+		}
 	}
 
-	// we're using dark_aqua &D and yellow &Y
+	// we're using gray &D and gold &Y
 	public static void msg(CommandSender p, String message) {
 		p.sendMessage(
 				ChatColor.GOLD + ">> " + message.replace("&D", ChatColor.GRAY + "").replace("&Y", ChatColor.GOLD + ""));
@@ -462,16 +455,12 @@ public class Main extends JavaPlugin {
 					this.deleteSet.add(uuid);
 					msg(sender,
 							"&YExecute the same command again to confirm the removal of the banner. Make sure you are looking at the banner you want to delete.");
-
-					new BukkitRunnable() {
-
-						@Override
-						public void run() {
-							if (deleteSet.remove(uuid)) {
-								msg(sender, "&DBanner removal request expired...");
-							}
+					
+					Bukkit.getScheduler().runTaskLater(this, () -> {
+						if (deleteSet.remove(uuid)) {
+							msg(sender, "&DBanner removal request expired...");
 						}
-					}.runTaskLater(this, 20 * 5);
+					}, 20 * 5);
 				}
 			} else {
 				msg(sender,
@@ -526,9 +515,10 @@ public class Main extends JavaPlugin {
 
 		if (link.contains("skinrender.com:")) {
 			String key = this.getConfig().getString("skinrender_key");
-			link = (link + ";KEY=" + key);
+			link += (";KEY=" + key);
 
 			try (InputStream stream = openStream(link)) {
+				@SuppressWarnings("UnstableApiUsage")
 				final byte[] result = ByteStreams.toByteArray(stream);
 				// it was already an image
 				return ImageIO.read(new ByteArrayInputStream(result));
@@ -541,7 +531,7 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-	private static InputStream openStream(String link) throws MalformedURLException, IOException {
+	private static InputStream openStream(String link) throws IOException {
 		final URLConnection url = new URL(link).openConnection();
 		url.setConnectTimeout(2000);
 		url.setReadTimeout(5000);

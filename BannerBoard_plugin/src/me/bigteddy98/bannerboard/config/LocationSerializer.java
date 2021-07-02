@@ -1,10 +1,10 @@
 package me.bigteddy98.bannerboard.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LocationSerializer {
 

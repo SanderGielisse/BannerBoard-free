@@ -1,10 +1,10 @@
 package me.bigteddy98.bannerboard;
 
+import org.bukkit.inventory.ItemStack;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import org.bukkit.inventory.ItemStack;
 
 public class Tag_1_13_R1 {
 

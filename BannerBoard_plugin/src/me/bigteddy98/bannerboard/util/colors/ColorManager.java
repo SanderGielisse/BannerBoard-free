@@ -1,20 +1,27 @@
 package me.bigteddy98.bannerboard.util.colors;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+import org.bukkit.Bukkit;
+
+import java.io.*;
 
 public class ColorManager {
 
 	private final byte[] CACHE = new byte[256 * 256 * 256];
 
 	public ColorManager(String useFile) {
+		Bukkit.getLogger().info("Loading color cache table " + useFile + "...");
 		System.out.println("[INFO] [BannerBoard] Loading color cache table " + useFile + "...");
 		byte[] decompressed;
-		try (DataInputStream in = new DataInputStream(new BufferedInputStream(ColorManager.class.getResourceAsStream(useFile)))) {
+		InputStream stream = ColorManager.class.getResourceAsStream(useFile);
+		if (stream == null) {
+			throw new RuntimeException("Unable to load Color cache. InputStream was null...");
+		}
+		
+		try (DataInputStream in = new DataInputStream(new BufferedInputStream(stream))) {
 			final int size = in.readInt();
 			final byte[] compressed = new byte[size];
+			
+			// Why is this used?
 			in.read(compressed);
 
 			decompressed = Compressor.decompress(compressed);

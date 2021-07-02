@@ -1,11 +1,9 @@
 package me.bigteddy98.bannerboard;
 
-import java.io.IOException;
+import org.bukkit.Bukkit;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 
 /**
  * @author Sander
@@ -15,7 +13,7 @@ public class IdManager {
 
 	private final List<Short> ids = new ArrayList<>();
 
-	public void load(int idCountStart, int amount) throws ConfigException, IOException {
+	public void load(int idCountStart, int amount) throws ConfigException {
 		for (int i = 0; i < amount; i++) {
 			short id = (short) (idCountStart + i);
 			Mapping.claimId(id);
@@ -25,7 +23,7 @@ public class IdManager {
 
 	public short getId() {
 		if (this.ids.isEmpty()) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[WARNING] [BannerBoard] No ID's free, remove banners or make your ID range bigger.");
+			Bukkit.getLogger().warning("No IDs available. Remove banners or increase idrange.amount in the configuration.");
 			throw new RuntimeException("No ID's free, remove banners or make your ID range bigger");
 		}
 		return this.ids.remove(0);
