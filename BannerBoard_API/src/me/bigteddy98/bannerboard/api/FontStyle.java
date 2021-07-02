@@ -29,21 +29,11 @@ public enum FontStyle {
 
 	private final int id;
 
-	private FontStyle(int id) {
+	FontStyle(int id) {
 		this.id = id;
 	}
 
 	public int getId() {
 		return id;
-	}
-	
-	public static int getFont(String name) {
-		for (FontStyle style : values()) {
-			if (style.name().equalsIgnoreCase(name)) {
-				return style.getId();
-			}
-		}
-		
-		return PLAIN.getId();
 	}
 }
